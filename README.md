@@ -5,6 +5,6 @@ See it in action - (https://chatter-ui-demo.herokuapp.com).
 Usage
 ------------------------------
 '''
-<html></html>
+&lt;html&gt;&lt;/html&gt;
 '''
 
