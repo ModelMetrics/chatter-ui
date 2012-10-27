@@ -4,7 +4,7 @@ See it in action - (https://chatter-ui-demo.herokuapp.com).
 
 Usage
 ------------------------------
-'''html
+'''
 <html></html>
 '''
 
