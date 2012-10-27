@@ -33,13 +33,13 @@ $(function() {
 
 Proxy Configuration
 ------------------------------
-chatter-ui interacts with the salesforce.com REST and Chatter REST APIs.  Because these APIs reside on a domain different, chatter-ui is dependent upon either a local reverse proxy, or a remote reverse proxy that supports CORS headers.  Here are at least three different proxies you can leverage, and the corresponding proxy configuration.
+chatter-ui interacts with the salesforce.com REST and Chatter REST APIs.  Because these APIs reside on a domain different, chatter-ui is dependent upon either a local reverse proxy, or a remote reverse proxy that supports CORS headers.  Below are at least three different proxies you can leverage, and the corresponding proxy configuration.
 
 [chatter-proxy](https://github.com/sohalloran/chatter-proxy)
 
 ```javascript
 proxy: {
-  url: "https://chatter-proxy.herokuapp.com/$path",
+  url: "https://chatter-proxy.herokuapp.com/${path}",
   headers: [
     {name: "SalesforceProxy-Endpoint", value: "${host}"},
     {name: "X-Authorization", value: "OAuth ${token}"}
