@@ -25,12 +25,9 @@ On Load:
 ```javascript
 $(function() {
   Backbone.Salesforce.connection = {
-    host: response.instance_url,
-    token: response.access_token,
-    proxy : {
-      url: "http://localhost:5001/${host}${path}",
-      headers: [{name: "Authorization", value: "OAuth ${token}"}]
-    }
+    host:  'REPLACE ME!!',
+    token: 'REPLACE ME!!',
+    proxy: 'REPLACE ME!!'
   };
   new window.AppWithSingleFeedView({el:'#chatter'});
 });
