@@ -39,7 +39,7 @@ $(function() {
 
 Proxy Configuration
 ------------------------------
-chatter-ui interacts with the salesforce.com REST and Chatter REST APIs.  Because these APIs reside on a domain different, chatter-ui is dependent upon either a local reverse proxy, or a remote reverse proxy that supports CORS headers.  Below are at least three different proxies you can leverage, and the corresponding proxy configuration.
+chatter-ui interacts with the salesforce.com REST and Chatter REST APIs.  Because these APIs reside on a domain different, chatter-ui is dependent upon either a local reverse proxy, or a remote reverse proxy that supports [CORS](https://github.com/anandbn/chatter-ui) headers.  Below are at least three different proxies you can leverage, and the corresponding proxy configuration.
 
 [chatter-proxy](https://github.com/sohalloran/chatter-proxy)
 
@@ -52,6 +52,7 @@ proxy: {
   ]
 }
 ```
+If you use this proxy, email [Stephen O'Halloran](sohalloran@salesforce.com) or [Richard Vanhook](rvanhook@salesforce.com) to get your application domain added into the accepted domain list. This is required so that CORS can work well with the proxy and your side.
 
 [CORS-Proxy](https://github.com/gr2m/CORS-Proxy)
 
