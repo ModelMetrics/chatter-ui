@@ -2,24 +2,30 @@ Pure JS/HTML/CSS salesforce.com chatter front-end.
 
 See it in action - [https://chatter-ui-demo.herokuapp.com](https://chatter-ui-demo.herokuapp.com).
 
+Dependencies:
+------------------------------
+* [jQuery](http://jquery.com/)
+* [Underscore](http://underscorejs.org/)
+* [Backbone](backbonejs.org)
+
 Usage
 ------------------------------
 
-Dependencies:
+Head:
 ```html
-<link href='/stylesheets/style.css' rel='stylesheet' />
-<script src='/javascripts/lib/jquery.js' type='text/javascript'></script>
-<script src='/javascripts/lib/underscore.js' type='text/javascript'></script>
-<script src='/javascripts/lib/backbone.js' type='text/javascript'></script>
-<script src='/javascripts/app.js' type='text/javascript'></script>
+<link href='chatter-ui.css' rel='stylesheet' />
+<script src='jquery.js' type='text/javascript'></script>
+<script src='underscore.js' type='text/javascript'></script>
+<script src='backbone.js' type='text/javascript'></script>
+<script src='chatter-ui.js' type='text/javascript'></script>
 ```
 
-Structure:
+Body:
 ```html
 <div id='chatter'></div>
 ```
 
-On Load:
+On load:
 ```javascript
 $(function() {
   Backbone.Salesforce.connection = {
