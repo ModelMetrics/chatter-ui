@@ -22,7 +22,10 @@ Head:
 
 Body:
 ```html
-<div id='chatter'></div>
+<div id='chatter'>
+<textarea id="feeds-post" rows="1" cols="25"></textarea>
+<button id="feeds-submit">Post</button>
+</div>
 ```
 
 On load:
