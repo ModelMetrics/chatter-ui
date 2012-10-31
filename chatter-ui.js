@@ -2,9 +2,70 @@
 
   console.log('backbone.salesforce.js');
 
-  Backbone.Salesforce = Backbone.Salesforce || {defaultApiVersion: 'v26.0', connection: {}};
+  Backbone.Salesforce = Backbone.Salesforce || {
+  	defaultApiVersion: 'v26.0', 
+  	connection: {},
+  	getHeaders : function(connection) {
+		var headers = {};
+		var substitutes = {
+			'token': connection.token,
+        	'host': connection.host
+      	};
+      	var proxyHeaders = connection.proxy.headers;
+		for(var i in proxyHeaders) {
+			headers[proxyHeaders[i].name]= this.replaceVars(proxyHeaders[i].value,substitutes);
+    	} 
+    	return headers;	 
+  	 },
+	getBaseUrl : function(connection) {
+      //validate connection config
+      if(_.isUndefined(connection)) throw 'Backbone.Salesforce.connection undefined!';
+      if(_.isUndefined(connection.host)) throw 'Backbone.Salesforce.connection.host undefined!';
+      if(_.isUndefined(connection.token)) throw 'Backbone.Salesforce.connection.token undefined!';
+
+      // api version
+      var apiVersion = connection.apiVersion;
+      if(_.isUndefined(apiVersion)) apiVersion = Backbone.Salesforce.defaultApiVersion;
+      apiVersion = apiVersion.replace(/^v/,'');
+      if(!/^\d+(\.\d{1,2})?/.test(apiVersion)) throw 'Invalid API Version: ' + apiVersion;
+
+      // get substitution variables
+      var path = '';
+      if(!/^\//.test(path)) path = '/' + path;
+      if(!/^\/services\/data\/v\d+(\.\d{1,2})?/.test(path)){
+        path = '/services/data/v' + apiVersion + path;
+      } 
+      var host = connection.host;
+      host = host.replace(/^https:\/\//,'');
+      var substitutes = {
+        'host': host,
+        'token': connection.token,
+        'path': path
+      };
+
+      //calculate url and headers
+      var url = 'https://';
+      var headers = [];
+      if(!_.isUndefined(connection.proxy)){
+        url = this.replaceVars(connection.proxy.url,substitutes);
+        _.each(connection.proxy.headers,function(header){
+          headers.push({name: header.name, value: this.replaceVars(header.value,substitutes)});
+        }.bind(this));
+      } else {
+        url += host + path;
+      }
+      return url;        	 
+  	 },	
+    replaceVars: function(str, vars){
+      if(_.isUndefined(str)) return str;
+      return _.reduce(_.keys(vars),function(memo, key){
+        return memo.replace(new RegExp('\\$\{' + key + '\}'),vars[key]);
+      }, str);  	 
+  	}
+  }
 
   //-------------------------------------------------------
+  //
   Backbone.Salesforce.Collection = Backbone.Collection.extend({
     fetch: function(options){
       
@@ -168,11 +229,11 @@
   
   //-------------------------------------------------------
   window.FeedItemCollectionView = Backbone.View.extend({
-
+    
     id: _.uniqueId("feed-items"),
     tagName: "div",
     className: "feedcontainer cxfeedcontainer actionsOnHoverEnabled",
-    events:{'click .more': 'handleDoMore'},
+    events:{'click .more': 'handleDoMore'}, 
     
     initialize: function() {
       _.bindAll(this,'handleReset','handleDoMore');
@@ -194,29 +255,53 @@
       if(this.items.hasMore()){
         this.$el.append($('<button></button>').addClass('more').html('Get More'));
       }
-    },
-
+    },   
     handleDoMore: function(event) {
       var button = $(event.target);
       button.attr('disabled','disabled');
       this.items.fetch({more: true});
       button.remove();
-    }
+    }          
 
   });
   
   
   //-------------------------------------------------------
   window.AppWithSingleFeedView = Backbone.View.extend({
+    events:{'click #feeds-submit': 'handlePost'},
     
     initialize: function() {
       var view = new FeedItemCollectionView({items: new window.FeedItemCollection});
       this.$el.append(view.el);
       view.items.fetch({url: this.options.feedUrl || 'chatter/feeds/news/me/feed-items'});
+    },
+    
+    handlePost: function(event) {
+      if (!this.$('#feeds-post').val()) return;
+	  console.log('add post message: '+this.$('#feeds-post').val()); 
+	  var m = new Backbone.Salesforce.Message({body : {messageSegments : [{type: "Text", text: this.$('#feeds-post').val()}]}});
+	  m.save(null,{
+	  	success:  function() {	  	
+			location.reload();
+	  	} 	
+	  });
     }
     
   });
-  
+
+  Backbone.Salesforce.Message = Backbone.Model.extend({
+  	defaults : {body : {messageSegments : [{type: 'Text', text: ''}]}},
+  	url : 'chatter/feeds/news/me/feed-items',
+  	sync : messageSync,
+  });
+
+  function messageSync(method, model, options){	
+	var connection = Backbone.Salesforce.connection;  
+	options.url = Backbone.Salesforce.getBaseUrl(connection) + model.url;
+	options.headers = Backbone.Salesforce.getHeaders(connection);
+	return Backbone.sync(method, model, options);  
+  } 
+    
 })(jQuery);
 
 function parseAndFormat(str){
